@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a1a1a">
+    <title>Emoji Image Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px;
+            background: #000000;
+            min-height: 100vh;
+            box-sizing: border-box;
+            color: #ffffff;
+            counter-reset: step 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffffff;
+            font-size: 1.8rem;
+            margin: 1.5rem 0;
+            font-weight: 400;
+            letter-spacing: -0.5px;
+        }
+
+        p {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 30px;
+            padding: 0 20px;
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+
+        .accordion {
+            margin-bottom: 12px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(50, 50, 50, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .accordion-header {
+            background: transparent;
+            color: #ffffff;
+            padding: 20px;
+            border: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding-left: 60px;
+        }
+
+        .accordion-header::before {
+            content: counter(step);
+            counter-increment: step;
+            background: #007AFF;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            position: absolute;
+            left: 20px;
+        }
+
+        .accordion-header::after {
+            content: "›";
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.5);
+            position: absolute;
+            right: 20px;
+            transform: rotate(90deg);
+        }
+
+        .accordion-content {
+            display: none;
+            padding: 0 20px 20px 20px;
+            background: transparent;
+        }
+
+        .accordion-content.active {
+            display: block;
+            padding: 0 20px 20px 20px;
+            border-top: none;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: rgba(30, 30, 30, 0.8);
+            color: #ffffff;
+            box-sizing: border-box;
+            -webkit-appearance: none;
+            transition: none;
+        }
+
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 40px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            background: rgba(40, 40, 40, 0.8);
+        }
+
+        input[type="color"] {
+            height: 50px;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        #preview-container {
+            margin-top: 30px;
+            text-align: center;
+            padding: 20px;
+            background: rgba(50, 50, 50, 0.8);
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        #preview-canvas {
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        #download-btn {
+            background: #ffffff;
+            color: #000000;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 100px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 500;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        html {
+            background: #000000;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Emoji Image Generator</h1>
+    <p style="text-align: center; color: #999; margin-bottom: 30px; padding: 0 20px; line-height: 1.5;">
+        Create custom images with your favorite emoji. Choose an emoji, pick a background color, adjust the size, and position it anywhere on the image. Perfect for social media, presentations, or custom stickers.
+    </p>
+
+    <div class="accordion">
+        <button class="accordion-header">Choose Emoji</button>
+        <div class="accordion-content active">
+            <input type="text" id="emoji-input" placeholder="Type or paste an emoji here" maxlength="2">
+        </div>
+    </div>
+
+    <div class="accordion">
+        <button class="accordion-header">Select Background Color</button>
+        <div class="accordion-content">
+            <input type="color" id="color-input" value="#ffffff">
+        </div>
+    </div>
+
+    <div class="accordion">
+        <button class="accordion-header">Choose Size</button>
+        <div class="accordion-content">
+            <select id="size-input">
+                <option value="small">Small Emoji</option>
+                <option value="medium" selected>Medium Emoji</option>
+                <option value="large">Large Emoji</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="accordion">
+        <button class="accordion-header">Select Position</button>
+        <div class="accordion-content">
+            <select id="position-input">
+                <option value="center">Center</option>
+                <option value="top-left">Top Left</option>
+                <option value="top-right">Top Right</option>
+                <option value="bottom-left">Bottom Left</option>
+                <option value="bottom-right">Bottom Right</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="preview-container">
+        <canvas id="preview-canvas"></canvas>
+        <br>
+        <button id="download-btn">Download Image</button>
+    </div>
+
+    <script>
+        // Accordion functionality
+        const headers = document.querySelectorAll('.accordion-header');
+        headers.forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                content.classList.toggle('active');
+            });
+        });
+
+        // Image generation
+        const canvas = document.getElementById('preview-canvas');
+        const ctx = canvas.getContext('2d');
+        const inputs = {
+            emoji: document.getElementById('emoji-input'),
+            color: document.getElementById('color-input'),
+            size: document.getElementById('size-input'),
+            position: document.getElementById('position-input')
+        };
+
+        function updateCanvas() {
+            const canvasSize = 512; // Fixed canvas size
+            canvas.width = canvasSize;
+            canvas.height = canvasSize;
+            canvas.style.width = '300px';  // Display size
+            canvas.style.height = '300px';
+
+            // Draw background
+            ctx.fillStyle = inputs.color.value;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (!inputs.emoji.value) return;
+
+            // Calculate emoji size based on selection
+            const emojiSizes = {
+                small: canvasSize * 0.35,
+                medium: canvasSize * 0.42,
+                large: canvasSize * 0.50
+            };
+            const emojiSize = emojiSizes[inputs.size.value];
+            ctx.font = `${emojiSize}px Arial`;
+            
+            const padding = 180; // Increased from 100px to 150px padding for all directions
+            
+            let x, y;
+            switch (inputs.position.value) {
+                case 'center':
+                    x = canvasSize / 2;
+                    y = canvasSize / 2;
+                    break;
+                case 'top-left':
+                    x = padding;
+                    y = padding;
+                    break;
+                case 'top-right':
+                    x = canvasSize - padding;
+                    y = padding;
+                    break;
+                case 'bottom-left':
+                    x = padding;
+                    y = canvasSize - padding;
+                    break;
+                case 'bottom-right':
+                    x = canvasSize - padding;
+                    y = canvasSize - padding;
+                    break;
+            }
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(inputs.emoji.value, x, y);
+        }
+
+        // Add event listeners
+        Object.values(inputs).forEach(input => {
+            input.addEventListener('input', updateCanvas);
+        });
+
+        // Download functionality
+        document.getElementById('download-btn').addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'emoji-image.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+
+        // Initial render
+        updateCanvas();
+    </script>
+</body>
+</html>
